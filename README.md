@@ -1,6 +1,6 @@
 # OBS Dynamic Source Controller
 
-This Python script allows OBS Studio to dynamically update Text, Image, Video, and Browser sources based on data from an Excel file. You can easily manage and update multiple OBS sources using a structured Excel sheet, making it ideal for automated setups like esports tournaments or live productions.
+This Python script allows OBS Studio to dynamically update Text and Image sources based on data from an Excel file. You can easily manage and update multiple OBS sources using a structured Excel sheet, making it ideal for automated setups like esports tournaments or live productions.
 
 ## Features
 
@@ -45,7 +45,7 @@ pip install pandas openpyxl
    - **Worksheet**: Choose the worksheet from the Excel file containing your source data.
    - **Source Type Column**: Select the column in the Excel file that contains the source types (Text & Image).
    - **Source Name Column**: Select the column containing the names of the sources in OBS.
-   - **Value Column**: Select the column containing the values (text, image file paths, video file paths, or URLs).
+   - **Value Column**: Select the column containing the values (text, image file paths).
 
 5. Choose the **Reload Interval** to set how often the script updates OBS from the Excel file.
 
@@ -72,15 +72,14 @@ pip install pandas openpyxl
 ## Example Use Cases
 
 - **Esports Tournaments**: Dynamically update player names, team logos, and stats from an Excel file without manually adjusting OBS.
-- **Live Productions**: Quickly switch between video intros, sponsor images, or text overlays using data managed in Excel.
-- **Automated Streaming**: Automate browser overlays like live chat or scoreboards based on changing data.
+- **Live Productions**: Quickly switch between sponsor images, or text overlays using data managed in Excel.
 
 ## Troubleshooting
 
 - **Sources not updating**: Ensure that the source names in your Excel file match the exact names of the sources in OBS.
   ![Refresh](https://github.com/user-attachments/assets/990f4686-622e-4511-b3c0-6361a5e69787)
 
-- **File paths/URLs not working**: Double-check that the file paths for images/videos are correct and accessible. Ensure URLs for browser sources are valid.
+- **File paths/URLs not working**: Double-check that the file paths for images are correct and accessible.
 - **Drop down properties not loading**: Press the refresh button after loading the Excel file and worksheet
 
 ## Contributing
