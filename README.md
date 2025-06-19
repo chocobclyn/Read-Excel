@@ -40,7 +40,7 @@ pip install pandas openpyxl xlsxwriter
 
 1. **Open OBS Studio**.
 2. Go to **Tools** > **Scripts**.
-3. Click the **+** button and select the downloaded Python script (`OBSReadExcel.py`).
+3. Click the **+** button and select the downloaded Python script (`OBSReadExcel.py`). DO NOT LOAD `obs_template_generator.py` INTO SCRIPTS!!!
 4. In the script settings, fill in the following options:
 
    - **Excel File**: Select the database file you’ll use to manage your sources. Remember: only .xlsx .xlsm & .csv files supported
