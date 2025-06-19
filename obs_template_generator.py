@@ -35,7 +35,7 @@ def get_downloads_folder():
         return os.path.join(os.path.expanduser("~"), "Downloads")
 
 def show_message_box(message):
-    ctypes.windll.user32.MessageBoxW(0, message, "OBS Template Generator", 0x40)
+    ctypes.windll.user32.MessageBoxW(0, message, "OBS Read Excel - Generated Source List", 0x40)
 
 def generate_template_from_scenes():
     downloads_dir = get_downloads_folder()
@@ -66,7 +66,7 @@ def generate_template_from_scenes():
         for row_idx, row_data in enumerate(data, 1):
             worksheet.write_row(row_idx, 0, row_data)
         workbook.close()
-        show_message_box(f"Template saved to your Downloads folder:\n{output_file}")
+        show_message_box(f"Source list saved to your Downloads folder:\n\n{output_file}\n\nPlease make sure that you have the appropriate\nsoftware (Excel) to view/modify the file")
     except Exception as e:
         show_message_box(f"Failed to save template: {e}")
 

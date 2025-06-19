@@ -9,18 +9,19 @@ This Python script allows OBS Studio to dynamically update Text Image, Media, an
 - Dynamically update Text, Image, Media, and Browser sources in OBS.
 - Automatically reload sources at user-defined intervals.
 - Currently only supports the following file formats: .xlsx .xlsm .csv
+- [NEW] Sources list generator: Creates an Excel file to show which sources can be controlled by the script. You may use the generated file as a template for your control sheet. Just make sure to rename the generated file and load it into the obs-read-excel script.
 
 ## Requirements
 
 ### Software
 - **OBS Studio** with Python Scripting enabled
-- **Python 3.11** installed (with `pandas` and `openpyxl` libraries)
+- **Python 3.11** installed (with `pandas` and `openpyxl` libraries for obs-read-excel; `xlsxwriter` for the source list generator)
 - **Database Files** .xlsx .xlsm .csv fils for source management
 
 ### Python Libraries
 You'll need the following Python libraries installed:
 ```bash
-pip install pandas openpyxl
+pip install pandas openpyxl xlsxwriter
 ```
 
 ## Installation
@@ -71,7 +72,13 @@ pip install pandas openpyxl
 
 2. **Run the Script in OBS**:
    - The script will automatically update your OBS sources based on the data from the Excel file.
-   - You can change the Excel file data, and the script will refresh the sources at the interval you set.
+   - You can change the Excel file data, CTRL+S or save your Excel file to overwrite, and the script will refresh the sources at the interval you set.
+
+3. **Source List Generator** (optional):
+   - Click on the "Generate Source Template" button to read all of the current sources in your active scene collection.
+   - The generated file will be sent to your Downloads folder as `obs_source_template.xlsx`
+   - You can view all the sources that you are currently using. Sources with source types `text` `image` `media` `browser` are all able to be modified and can be read by the script.
+   - Use the generated excel file as your control sheet for dynamic sources by loading it to `obs-read-excel.py` 
 
 ## Example Use Cases
 
