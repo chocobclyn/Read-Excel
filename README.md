@@ -31,7 +31,7 @@ pip install pandas openpyxl xlsxwriter
    - Ensure Python 3.11 is installed.
    - Install the required libraries:
      ```bash
-     pip install pandas openpyxl
+     pip install pandas openpyxl xlsxwriter
      ```
 3. **OBS Studio**:
    - Ensure OBS is installed with scripting support enabled.
