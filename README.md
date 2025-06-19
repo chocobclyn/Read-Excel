@@ -9,7 +9,7 @@ This Python script allows OBS Studio to dynamically update Text Image, Media, an
 - Dynamically update Text, Image, Media, and Browser sources in OBS.
 - Automatically reload sources at user-defined intervals.
 - Currently only supports the following file formats: .xlsx .xlsm .csv
-- [NEW] Sources list generator: Creates an Excel file to show which sources can be controlled by the script. You may use the generated file as a template for your control sheet. Just make sure to rename the generated file and load it into the obs-read-excel script.
+- [NEW] Sources list generator: Creates an Excel file to show which sources can be controlled by the script
 
 ## Requirements
 
@@ -21,17 +21,22 @@ This Python script allows OBS Studio to dynamically update Text Image, Media, an
 ### Python Libraries
 You'll need the following Python libraries installed:
 ```bash
-pip install pandas openpyxl xlsxwriter
+python -m pip install pandas openpyxl xlsxwriter
 ```
 
 ## Installation
 
-1. **Download the Script**: Clone or download the repository from GitHub.
+1. **Download the Script**: Get the latest release.
 2. **Python Setup**:
    - Ensure Python 3.11 is installed.
+   - Navigate to your python folder
+     ```bash
+     /AppData/Local/Programs/Python/Python3xx
+     ```
+   - Right click in the folder and run terminal
    - Install the required libraries:
      ```bash
-     pip install pandas openpyxl xlsxwriter
+     python -m pip install pandas openpyxl xlsxwriter
      ```
 3. **OBS Studio**:
    - Ensure OBS is installed with scripting support enabled.
