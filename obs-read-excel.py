@@ -4,6 +4,7 @@ from openpyxl import load_workbook
 import time
 import os
 import threading
+from obs_template_generator import generate_template_button_clicked
 
 excel_file = ""
 worksheet = ""
@@ -28,11 +29,11 @@ def script_description():
         "<b>Enhanced Excel/CSV Source Controller</b>"
         "<hr>"
         "Automatically updates OBS sources based on Excel/CSV file content. "
-        "Supports text, image, video, and browser sources"
+        "Supports text, image, media, and browser sources"
         "<br><br>"
         "Columns needed:"
         "<ul>"
-        "<li>Source Type (text/image/video/browser)</li>"
+        "<li>Source Type (text/image/media/browser)</li>"
         "<li>Source Name (as named in OBS)</li>"
         "<li>Value (What you want to set the source to)"
         "</ul>"
@@ -83,7 +84,7 @@ def update_obs_sources():
                     type_lower = source_type.lower()
                     if type_lower == "text":
                         update_text_source(source_name, value)
-                    elif type_lower in ["image", "video", "audio"]:
+                    elif type_lower in ["image", "media"]:
                         update_media_source(source_name, value, type_lower)
                     elif type_lower == "browser":
                         update_browser_source(source_name, value)
@@ -150,6 +151,8 @@ def script_properties():
     obs.obs_property_list_add_int(reload_interval_list, "10 seconds", 10)
 
     obs.obs_properties_add_button(props, "toggle_script", "Start/Stop Script", toggle_script)
+    obs.obs_properties_add_button(props, "generate_template", "Generate Source Template", generate_template_button_clicked)
+
     return props
 
 

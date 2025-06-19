@@ -1,12 +1,12 @@
 # OBS Dynamic Source Controller
 
-This Python script allows OBS Studio to dynamically update Text Image, Video, Audio, and Browser sources based on data from an Excel or CSV file. You can easily manage and update multiple OBS sources using a well structured Excel sheet, making it ideal for automated setups like esports tournaments or live productions.
+This Python script allows OBS Studio to dynamically update Text Image, Media, and Browser sources based on data from an Excel or CSV file. You can easily manage and update multiple OBS sources using a well structured Excel sheet, making it ideal for automated setups like esports tournaments or live productions.
 
 
 
 ## Features
 
-- Dynamically update Text, Image, Video, Audio, and Browser sources in OBS.
+- Dynamically update Text, Image, Media, and Browser sources in OBS.
 - Automatically reload sources at user-defined intervals.
 - Currently only supports the following file formats: .xlsx .xlsm .csv
 
@@ -46,7 +46,7 @@ pip install pandas openpyxl
    - **Sheet Name/Label**: Choose the worksheet from the Excel file containing your source data. If the File is `CSV`, just put in `CSV`
    - **Source Type Column**: Type the column in the Excel file that contains the source types (Text & Image).
    - **Source Name Column**: Type the column containing the names of the sources in OBS.
-   - **Value Column**: Type the column containing the values (string values for Text sources, local file paths for Images/Video/Audio sources, url paths for Browser sources).
+   - **Value Column**: Type the column containing the values (string values for Text sources, local file paths for Images/Media sources, url paths for Browser sources).
 
 5. Choose the **Reload Interval** to set how often the script updates OBS from the Excel file.
 
@@ -61,13 +61,13 @@ pip install pandas openpyxl
    |-------------|-------------|-----------------------------------|
    | Text        | Title       | Welcome to the Stream             |
    | Image       | Logo        | C:/path/to/logo.png               |
-   | Video       | VideoTrack  | C:/path/to/video.mp4              |
-   | Audio       | BGM         | C:/path/to/audio.mp3              |
+   | Media       | VideoTrack  | C:/path/to/video.mp4              |
+   | Media       | BGM         | C:/path/to/audio.mp3              |
    | Browser     | VDO Ninja 1 | https://www.path.to/browser       |
 
-   - The **Source Type** column can have the values: `text` `image` `video` `audio` `browser`.
+   - The **Source Type** column can have the values: `text` `image` `media` `browser`.
    - The **Source Name** must match the name of the source in OBS.
-   - The **Value** column should contain the text for `text` sources, and file paths for `image` `video` `audio` sources, and URL paths to `browser` sources.
+   - The **Value** column should contain the text for `text` sources, and file paths for `image` `media` sources, and URL paths to `browser` sources.
 
 2. **Run the Script in OBS**:
    - The script will automatically update your OBS sources based on the data from the Excel file.
