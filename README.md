@@ -29,12 +29,7 @@ python -m pip install pandas openpyxl xlsxwriter
 1. **Download the Script**: Get the latest release.
 2. **Python Setup**:
    - Ensure Python 3.11 is installed.
-   - Navigate to your python folder
-     ```bash
-     /AppData/Local/Programs/Python/Python3xx
-     ```
-   - Right click in the folder and run terminal
-   - Install the required libraries:
+   - Open terminal and install the required libraries:
      ```bash
      python -m pip install pandas openpyxl xlsxwriter
      ```
