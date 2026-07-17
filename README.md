@@ -1,4 +1,4 @@
-# OBS Dynamic Source Controller
+# Read-Excel — Dynamic Source Controller
 
 This Python script allows OBS Studio to dynamically update Text, Image, Media, Browser, and Color sources — plus source visibility and the active scene — based on data from an Excel/CSV file or a Google Sheet. You can easily manage and update multiple OBS sources using a well structured sheet, making it ideal for automated setups like esports tournaments or live productions.
 
@@ -30,7 +30,7 @@ This Python script allows OBS Studio to dynamically update Text, Image, Media, B
 
 1. **Open OBS Studio**.
 2. Go to **Tools** > **Scripts**.
-3. Click the **+** button and select the downloaded Python script (`obs-read-excel.py`). DO NOT LOAD `obs_template_generator.py` INTO SCRIPTS!!!
+3. Click the **+** button and select the downloaded Python script (`read-excel.py`). DO NOT LOAD `template_generator.py` INTO SCRIPTS!!!
 4. On first load the script installs its dependencies — watch the status line, then reload the script (Scripts > Reload) when it says so.
 5. In the script settings, fill in the following options:
 
@@ -76,7 +76,7 @@ This Python script allows OBS Studio to dynamically update Text, Image, Media, B
 
 4. **Source List Generator** (optional):
    - Click **Generate Source Template** to scan your scene collection.
-   - The file is saved to your Downloads folder as `obs_source_template.xlsx`, listing every controllable source with a `CHANGE_ME` placeholder value.
+   - The file is saved to your Downloads folder as `source_template.xlsx`, listing every controllable source with a `CHANGE_ME` placeholder value.
    - Use it as the starting point for your control sheet.
 
 ## Example Use Cases

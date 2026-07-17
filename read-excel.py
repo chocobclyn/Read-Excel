@@ -353,7 +353,7 @@ def toggle_script(props, prop):
 def generate_template_clicked(props, prop):
     global status_text
     try:
-        from obs_template_generator import generate_template_from_scenes
+        from template_generator import generate_template_from_scenes
         status_text = generate_template_from_scenes()
     except Exception as e:
         status_text = f"Template generation failed: {e}"

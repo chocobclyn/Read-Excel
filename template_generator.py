@@ -51,7 +51,7 @@ def generate_template_from_scenes():
     """Scans the scene collection and writes a starter control sheet. Returns a status message."""
     from openpyxl import Workbook
 
-    output_file = os.path.join(get_downloads_folder(), "obs_source_template.xlsx")
+    output_file = os.path.join(get_downloads_folder(), "source_template.xlsx")
 
     scenes = obs.obs_frontend_get_scenes()
     data = []
