@@ -1,0 +1,6 @@
+# The script auto-installs this on first load; kept here as a manual fallback.
+# No pins: OBS's embedded Python version varies by install.
+openpyxl
+# Optional, auto-installed only if you use the Google Sheets API route (private sheets):
+# gspread
+# google-auth
