@@ -35,6 +35,17 @@ install_requested = set()
 KEY_FOR_TYPE = {"text": "text", "image": "file", "media": "local_file", "browser": "url"}
 TRUTHY = ("true", "1", "yes", "show", "on")
 COL_KEYS = ("source_type_column", "source_name_column", "value_column")
+# optional per-item setting columns, recognized by header name (case-insensitive);
+# a blank cell leaves that setting untouched
+SETTING_COLS = ("Visible", "Pos X", "Pos Y", "Scale", "Rotation", "Bounds Type")
+
+
+def parse_setting(name, raw):
+    if name == "Visible":
+        return str(raw).strip().lower() in TRUTHY
+    if name == "Bounds Type":
+        return int(float(str(raw).strip()))  # OBS enum: 0 none, 1 stretch, 2-6 scale modes
+    return float(str(raw).strip())
 
 
 def script_description():
@@ -46,10 +57,13 @@ def script_description():
         "<br><br>"
         "Columns needed:"
         "<ul>"
-        "<li>Source Type (text/image/media/browser/color/visibility/scene)</li>"
+        "<li>Source Type (text/image/media/browser/color/scene)</li>"
         "<li>Source Name (as named in OBS; scene name for 'scene' rows)</li>"
-        "<li>Value (text/path/URL, #RRGGBB for color, TRUE/FALSE for visibility and scene)</li>"
+        "<li>Value (text/path/URL, #RRGGBB for color, TRUE for scene)</li>"
         "</ul>"
+        "Optional setting columns (blank cell = leave untouched):<br>"
+        "Visible, Pos X, Pos Y, Scale, Rotation, Bounds Type"
+        "<br><br>"
         "By John Paolo 'CHOCO!' Baclayon <br>"
         "This program is free to use and free to modify under the MIT License"
     )
@@ -198,31 +212,46 @@ def update_obs_sources():
             print(status_text)
             return
 
+    header_by_lower = {h.lower(): h for h in headers}
+    setting_cols = {c: header_by_lower[c.lower()] for c in SETTING_COLS if c.lower() in header_by_lower}
+
+    def blank(v):
+        return v is None or str(v).strip() == ""
+
     updated = skipped = errors = 0
     for i, row in enumerate(rows):
         try:
-            source_type = row.get(source_type_column)
             source_name = row.get(source_name_column)
-            value = row.get(value_column)
             # ponytail: blank cells never touch OBS — kills the endless failures
             # from template rows and 'nan' text on stream
-            if any(v is None or str(v).strip() == "" for v in (source_type, source_name, value)):
+            if blank(source_name):
                 skipped += 1
                 continue
-            type_lower = str(source_type).strip().lower()
             source_name = str(source_name).strip()
-            if type_lower in KEY_FOR_TYPE:
-                update_source_setting(source_name, KEY_FOR_TYPE[type_lower], str(value))
+            did_something = False
+
+            source_type = row.get(source_type_column)
+            value = row.get(value_column)
+            if not blank(source_type) and not blank(value):
+                type_lower = str(source_type).strip().lower()
+                if type_lower in KEY_FOR_TYPE:
+                    update_source_setting(source_name, KEY_FOR_TYPE[type_lower], str(value))
+                    did_something = True
+                elif type_lower == "color":
+                    update_source_setting(source_name, "color", parse_color(value), as_int=True)
+                    did_something = True
+                elif type_lower == "scene":
+                    if str(value).strip().lower() in TRUTHY and switch_scene(source_name):
+                        did_something = True
+
+            cells = {canon: parse_setting(canon, row.get(header))
+                     for canon, header in setting_cols.items() if not blank(row.get(header))}
+            if cells:
+                apply_item_settings(source_name, cells)
+                did_something = True
+
+            if did_something:
                 updated += 1
-            elif type_lower == "color":
-                update_source_setting(source_name, "color", parse_color(value), as_int=True)
-                updated += 1
-            elif type_lower == "visibility":
-                set_source_visibility(source_name, str(value).strip().lower() in TRUTHY)
-                updated += 1
-            elif type_lower == "scene":
-                if str(value).strip().lower() in TRUTHY and switch_scene(source_name):
-                    updated += 1
             else:
                 skipped += 1
         except Exception as e:
@@ -253,16 +282,33 @@ def update_source_setting(source_name, key, value, as_int=False):
     obs.obs_source_release(source)
 
 
-def set_source_visibility(source_name, visible):
-    # ponytail: toggles the item in every scene containing it; add a scene
-    # column if per-scene control is ever needed
+def apply_item_settings(source_name, cells):
+    # ponytail: applies in every scene containing the item; add a scene column
+    # if per-scene control is ever needed
     scenes = obs.obs_frontend_get_scenes()
     for scene_source in scenes:
         scene = obs.obs_scene_from_source(scene_source)
-        if scene:
-            item = obs.obs_scene_find_source_recursive(scene, source_name)
-            if item:
-                obs.obs_sceneitem_set_visible(item, visible)
+        if not scene:
+            continue
+        item = obs.obs_scene_find_source_recursive(scene, source_name)
+        if not item:
+            continue
+        if "Visible" in cells:
+            obs.obs_sceneitem_set_visible(item, cells["Visible"])
+        if "Pos X" in cells or "Pos Y" in cells:
+            pos = obs.vec2()
+            obs.obs_sceneitem_get_pos(item, pos)  # keep the axis that wasn't given
+            pos.x = cells.get("Pos X", pos.x)
+            pos.y = cells.get("Pos Y", pos.y)
+            obs.obs_sceneitem_set_pos(item, pos)
+        if "Scale" in cells:
+            scale = obs.vec2()
+            scale.x = scale.y = cells["Scale"]
+            obs.obs_sceneitem_set_scale(item, scale)
+        if "Rotation" in cells:
+            obs.obs_sceneitem_set_rot(item, cells["Rotation"])
+        if "Bounds Type" in cells:
+            obs.obs_sceneitem_set_bounds_type(item, cells["Bounds Type"])
     obs.source_list_release(scenes)
 
 

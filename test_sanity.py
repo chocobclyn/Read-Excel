@@ -5,7 +5,8 @@ import sys
 import tempfile
 import unittest.mock
 
-sys.modules["obspython"] = unittest.mock.MagicMock()
+obs_mock = unittest.mock.MagicMock()
+sys.modules["obspython"] = obs_mock
 
 _spec = importlib.util.spec_from_file_location(
     "ore", os.path.join(os.path.dirname(os.path.abspath(__file__)), "read-excel.py"))
@@ -25,9 +26,13 @@ assert ore.gsheet_export_url(url) == "https://docs.google.com/spreadsheets/d/ABC
 assert ore.gsheet_export_url("https://docs.google.com/spreadsheets/d/ABC/edit").endswith("gid=0")
 assert ore.gsheet_export_url("not a sheet url") is None
 
-# visibility truthiness
+# truthiness + setting-cell parsing
 assert "TRUE".strip().lower() in ore.TRUTHY
 assert "show" in ore.TRUTHY and "false" not in ore.TRUTHY
+assert ore.parse_setting("Visible", "TRUE") is True
+assert ore.parse_setting("Visible", "hide") is False
+assert ore.parse_setting("Bounds Type", "1") == 1
+assert ore.parse_setting("Scale", "0.5") == 0.5
 
 # load_data: missing file returns None, never raises
 ore.db_format = "excel"
@@ -38,10 +43,12 @@ assert ore.load_data() is None
 with tempfile.TemporaryDirectory() as tmp:
     csv_path = os.path.join(tmp, "control.csv")
     with open(csv_path, "w", newline="", encoding="utf-8") as f:
-        f.write("Source Type,Source Name,Value\n"
-                "text,Title,Hello\n"
-                ",,\n"
-                "mystery,X,1\n")
+        f.write("Source Type,Source Name,Value,Visible,Pos X,Pos Y,Scale,Rotation,Bounds Type\n"
+                "text,Title,Hello,,,,,,\n"
+                ",,,,,,,,\n"
+                "mystery,X,1,,,,,,\n"
+                ",Logo,,FALSE,100,200,0.5,45,1\n"
+                ",Bad,,,,oops,,,\n")
     ore.db_format = "csv"
     ore.excel_file = csv_path
     ore.source_type_column = "Source Type"
@@ -51,16 +58,24 @@ with tempfile.TemporaryDirectory() as tmp:
     ore.last_file_modified = 0
     ore.data_cache = None
 
+    all_headers = ["Source Type", "Source Name", "Value",
+                   "Visible", "Pos X", "Pos Y", "Scale", "Rotation", "Bounds Type"]
     headers, rows = ore.load_data()
-    assert headers == ["Source Type", "Source Name", "Value"]
+    assert headers == all_headers
     assert rows[0]["Value"] == "Hello"
 
     # picker probe: csv reports one pseudo-sheet and the real headers
-    assert ore.probe_file(csv_path, "csv", "") == (["CSV"], ["Source Type", "Source Name", "Value"])
+    assert ore.probe_file(csv_path, "csv", "") == (["CSV"], all_headers)
     assert ore.probe_file("no_such_file.csv", "csv", "") == ([], [])
 
+    # one fake scene so apply_item_settings has something to iterate
+    obs_mock.obs_frontend_get_scenes.return_value = [unittest.mock.MagicMock()]
     ore.update_obs_sources()
-    assert "updated 1, skipped 2, errors 0" in ore.status_text, ore.status_text
+    # Title=content, Logo=settings-only -> updated; blank + mystery -> skipped; Bad Pos Y -> error
+    assert "updated 2, skipped 2, errors 1" in ore.status_text, ore.status_text
+    assert obs_mock.obs_sceneitem_set_visible.call_args[0][1] is False
+    assert obs_mock.obs_sceneitem_set_rot.call_args[0][1] == 45.0
+    assert obs_mock.obs_sceneitem_set_bounds_type.call_args[0][1] == 1
 
     # bad column name is reported, not silent
     ore.value_column = "Nope"

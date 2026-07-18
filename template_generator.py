@@ -70,7 +70,8 @@ def generate_template_from_scenes():
     try:
         wb = Workbook()
         ws = wb.active
-        ws.append(["Source Type", "Source Name", "Value"])
+        ws.append(["Source Type", "Source Name", "Value",
+                   "Visible", "Pos X", "Pos Y", "Scale", "Rotation", "Bounds Type"])
         for row in data:
             ws.append(row)
         wb.save(output_file)

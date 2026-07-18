@@ -7,7 +7,7 @@ This Python script allows OBS Studio to dynamically update Text, Image, Media, B
 ## Features
 
 - Dynamically update Text, Image, Media, Browser, and Color sources in OBS.
-- Show/hide sources and switch scenes from the sheet.
+- Show/hide sources, move/scale/rotate them, change bounding-box style, and switch scenes from the sheet.
 - Automatically reload sources at a user-defined interval.
 - Sheet and column settings are dropdowns read from your actual file — no manual typing, no spelling mistakes.
 - Supported data sources: `.xlsx` `.xlsm` `.csv` files, and Google Sheets (link-shared or private via API).
@@ -48,24 +48,30 @@ This Python script allows OBS Studio to dynamically update Text, Image, Media, B
 
 1. **Prepare the sheet** (you can customize the column names):
 
-   | Source Type | Source Name | Value                             |
-   |-------------|-------------|-----------------------------------|
-   | Text        | Title       | Welcome to the Stream             |
-   | Image       | Logo        | C:/path/to/logo.png               |
-   | Media       | VideoTrack  | C:/path/to/video.mp4              |
-   | Browser     | VDO Ninja 1 | https://www.path.to/browser       |
-   | Color       | Backdrop    | #FF8800                           |
-   | Visibility  | Sponsor Bar | TRUE                              |
-   | Scene       | Intermission| FALSE                             |
+   | Source Type | Source Name | Value                             | Visible | Pos X | Pos Y | Scale | Rotation | Bounds Type |
+   |-------------|-------------|-----------------------------------|---------|-------|-------|-------|----------|-------------|
+   | Text        | Title       | Welcome to the Stream             |         |       |       |       |          |             |
+   | Image       | Logo        | C:/path/to/logo.png               | TRUE    | 100   | 50    | 0.5   |          |             |
+   | Media       | VideoTrack  | C:/path/to/video.mp4              |         |       |       |       |          |             |
+   | Browser     | VDO Ninja 1 | https://www.path.to/browser       |         |       |       |       |          |             |
+   | Color       | Backdrop    | #FF8800                           |         |       |       |       |          |             |
+   |             | Sponsor Bar |                                   | FALSE   |       |       |       | 45       |             |
+   | Scene       | Intermission| FALSE                             |         |       |       |       |          |             |
 
-   - **Source Type** values: `text` `image` `media` `browser` `color` `visibility` `scene` (case-insensitive).
+   - **Source Type** values: `text` `image` `media` `browser` `color` `scene` (case-insensitive).
    - **Source Name** must match the EXACT name of the source in OBS (or the scene name for `scene` rows).
    - **Value** semantics:
      - `text`: the text to display; `image`/`media`: a local file path; `browser`: a URL.
      - `color`: a hex color like `#FF8800` (for Color sources).
-     - `visibility`: `TRUE`/`FALSE` (also accepts `yes`/`no`, `on`/`off`, `show`, `1`/`0`) — shows/hides the source in every scene containing it.
      - `scene`: set to `TRUE` to switch to that scene. Keep several scene rows in the sheet and flip one to TRUE to change scenes; the script won't re-trigger the transition while it's already live.
-   - Rows with a blank Type, Name, or Value are skipped (counted in the status line), so partial rows are safe.
+   - **Setting columns** (all optional — add only the ones you want): `Visible`, `Pos X`, `Pos Y`, `Scale`, `Rotation`, `Bounds Type`. Column names are matched case-insensitively; a **blank cell leaves that setting untouched**. They apply to the source in every scene containing it. A row can be settings-only (blank Type/Value) — see the Sponsor Bar row above.
+     - `Visible`: `TRUE`/`FALSE` (also `yes`/`no`, `on`/`off`, `show`, `1`/`0`).
+     - `Pos X` / `Pos Y`: position in pixels (either one alone works — the other axis is kept).
+     - `Scale`: uniform scale factor (`0.5` = half size, `2` = double).
+     - `Rotation`: degrees.
+     - `Bounds Type`: OBS's bounding-box style as a number — `0` none, `1` stretch, `2` scale to inner, `3` scale to outer, `4` scale to width, `5` scale to height, `6` max size only. Note: styles only have a visible effect if the item's bounds size is set (Edit Transform in OBS) — this column switches the style, it doesn't invent a box size.
+   - Rows with a blank Source Name — or nothing to apply — are skipped (counted in the status line), so partial rows are safe.
+   - **Breaking change** from earlier versions: the `visibility` Source Type is gone — move those rows to the `Visible` column.
 
 2. **Run the script in OBS**:
    - Edit the sheet, save (CTRL+S), and the sources refresh within one reload interval. You can keep the file open in Excel the whole time.
